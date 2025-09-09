@@ -31,6 +31,20 @@ npm install
 yarn install
 ```
 
+- Copy .env.example file to .env
+
+```bash
+cp .env.example .env
+```
+
+- Change .env data if needed (Already set for local development)
+
+- Start docker container for MongoDB (Local development)
+
+```bash
+docker compose up -d
+```
+
 - Start the development server.
 
 ```bash

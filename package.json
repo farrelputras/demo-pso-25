@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "dotenv -e .env -- next dev",
+    "build": "dotenv -- next build",
+    "start": "dotenv -- next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -19,5 +19,8 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.2",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^10.0.0"
   }
 }
