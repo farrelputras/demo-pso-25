@@ -55,6 +55,21 @@ yarn dev
 
 - Open your browser and navigate to http://localhost:3000 to access the application.
 
+## Terraform
+
+- Initialize Terraform backend
+
+```bash
+terraform init
+```
+
+- Apply Terraform (AWS)
+
+```bash
+terraform apply -var="cloud_provider=aws" -var-file="aws/example.tfvars"
+```
+
+
 ## Technologies Used
 
 - Next.js 13
