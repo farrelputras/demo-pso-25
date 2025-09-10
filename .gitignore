@@ -37,3 +37,8 @@ next-env.d.ts
 
 # docker volume
 /docker
+
+# terraform
+/.terraform
+*.tfvars
+!example.tfvars
