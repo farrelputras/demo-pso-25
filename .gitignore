@@ -39,6 +39,9 @@ next-env.d.ts
 /docker
 
 # terraform
+terraform.tfstate 
 /.terraform
 *.tfvars
+*.tfstate
 !example.tfvars
+
