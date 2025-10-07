@@ -43,12 +43,10 @@ jobs:
           node_modules/
           .git/
           .github/
-          app/
           .env
           .env.example
           .env.local
           .eslintrc.json
-          jsconfig.json
           README.md
           .next/cache/
           EOF
