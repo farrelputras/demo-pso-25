@@ -1,52 +1,58 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import BreadCrumb from "@/app/components/bread-crumb";
+import React from "react";
+import BreadCrumb from "@/nextjs-crud/app/components/bread-crumb";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 
 const breadCrumb = [
   { title: "Home", url: "../" },
-  { title: "View Product", url: "../view/" },
+  { title: "Add New Product", url: "../add/" },
 ];
 
-const ViewProduct = ({ id }) => {
-  const { register } = useForm({
-    defaultValues: async () => {
-      const { product } = await getProduct(id);
-      return product;
-    },
-  });
+const AddProduct = () => {
+  const router = useRouter();
 
-  const getProduct = async (id) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (data) => {
     try {
-      const res = await fetch(`../api/${id}`);
+      const res = await fetch("../api", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+
       if (!res.ok) {
-        throw new Error("Failed to get product");
+        throw new Error("Failed to add product");
       }
 
-      return await res.json();
+      const { message } = await res.json();
+      alert(message);
+      router.push("../");
     } catch (error) {
-      alert("Failed to get product");
+      console.log("Failed to add product", error);
+      alert("Failed to add product");
     }
   };
 
   return (
     <div>
       <BreadCrumb lists={breadCrumb} />
-      <h4 className="mb-2">View Product</h4>
+      <h4 className="mb-2">Add New Product</h4>
       <div className="mb-2">
         <div className="row">
           <div className="col-md-6">
-            <form method="POST">
+            <form onSubmit={handleSubmit(onSubmit)} method="POST">
               <div className="mb-3">
                 <label htmlFor="title" className="form-label">
                   Title
                 </label>
                 <input
                   className="form-control"
-                  {...register("title", {
-                    disabled: true,
-                  })}
+                  {...register("title", { required: true })}
                 />
               </div>
               <div className="mb-3">
@@ -55,7 +61,7 @@ const ViewProduct = ({ id }) => {
                 </label>
                 <textarea
                   className="form-control"
-                  {...register("description", { disabled: true })}
+                  {...register("description", { required: true })}
                 ></textarea>
               </div>
               <div className="mb-3">
@@ -64,8 +70,11 @@ const ViewProduct = ({ id }) => {
                 </label>
                 <input
                   className="form-control"
-                  {...register("price", { disabled: true })}
+                  {...register("price", { required: true })}
                 />
+              </div>
+              <div className="mb-3 text-end">
+                <input type="submit" className="btn btn-primary" />
               </div>
             </form>
           </div>
@@ -75,4 +84,4 @@ const ViewProduct = ({ id }) => {
   );
 };
 
-export default ViewProduct;
+export default AddProduct;

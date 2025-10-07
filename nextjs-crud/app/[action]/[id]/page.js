@@ -1,7 +1,7 @@
-import AddProduct from "@/app/components/add-product";
-import DeleteProduct from "@/app/components/delete-product";
-import EditProduct from "@/app/components/edit-product";
-import ViewProduct from "@/app/components/view-product";
+import AddProduct from "@/nextjs-crud/app/components/add-product";
+import DeleteProduct from "@/nextjs-crud/app/components/delete-product";
+import EditProduct from "@/nextjs-crud/app/components/edit-product";
+import ViewProduct from "@/nextjs-crud/app/components/view-product";
 import React from "react";
 
 const ActionProductId = ({ params }) => {

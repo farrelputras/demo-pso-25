@@ -1,0 +1,60 @@
+name: Deploy Next.js App to Azure
+
+on:
+  push:
+    branches: [" CobaAzureYer"]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "20"
+  WEBAPP_NAME: "demo-crud-app"
+
+jobs:
+  build-and-deploy:
+    name: "Build and Deploy Application"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: ./nextjs-crud/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./nextjs-crud
+        run: npm ci
+
+      - name: Build Next.js application
+        working-directory: ./nextjs-crud
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Create .deployignore
+        working-directory: ./nextjs-crud
+        run: |
+          cat > .deployignore << EOF
+          node_modules/
+          .git/
+          .github/
+          app/
+          .env
+          .env.example
+          .env.local
+          .eslintrc.json
+          jsconfig.json
+          README.md
+          .next/cache/
+          EOF
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./nextjs-crud
