@@ -1,5 +1,5 @@
 import React from "react";
-import AddProduct from "@/nextjs-crud/app/components/add-product";
+import AddProduct from "@/app/components/add-product";
 
 const ActionProduct = () => {
   return <AddProduct />;

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import BreadCrumb from "@/nextjs-crud/app/components/bread-crumb";
+import BreadCrumb from "@/app/components/bread-crumb";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 

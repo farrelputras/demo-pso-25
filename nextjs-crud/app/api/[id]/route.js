@@ -1,5 +1,5 @@
-import connectMongoDB from "@/nextjs-crud/app/libs/mongoDB";
-import Products from "@/nextjs-crud/app/models/products";
+import connectMongoDB from "@/app/libs/mongoDB";
+import Products from "@/app/models/products";
 import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
