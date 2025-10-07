@@ -144,16 +144,14 @@ resource "aws_instance" "server" {
               apt-get update && apt-get upgrade -y
 
               # Install basic packages
-              apt install -y curl unzip
+              apt install -y curl
 
               # Install Node.js 22.x (required for Next.js)
               curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
               sudo apt install -y nodejs
 
-              # Install AWS CLI v2 for S3 artifact access
-              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-              unzip awscliv2.zip
-              sudo ./aws/install
+              # Install Docker
+              apt-get install -y docker.io
 
               # Install PM2 globally for Next.js process management
               npm install -g pm2
