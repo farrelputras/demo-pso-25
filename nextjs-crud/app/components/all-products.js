@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import DataTable from "@/app/components/dataTable";
+import DataTable from "@/nextjs-crud/app/components/dataTable";
 
 const cols = ["ID", "TITLE", "DESCRIPTION", "PRICE"];
 
