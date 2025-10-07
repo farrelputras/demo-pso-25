@@ -27,7 +27,7 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 
   app_settings = {
-    MONGODB_URI = azurerm_cosmosdb_account.cosmosdb.connection_strings[0]
+    MONGODB_URL = azurerm_cosmosdb_account.cosmosdb.connection_strings[0]
   }
 }
 
