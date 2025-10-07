@@ -36,21 +36,6 @@ jobs:
           NODE_ENV: production
           MONGODB_URL: mongodb+srv://farrelputras:<password>@cosmosdb-manual.global.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000
 
-      - name: Create .deployignore
-        working-directory: ./nextjs-crud
-        run: |
-          cat > .deployignore << EOF
-          node_modules/
-          .git/
-          .github/
-          .env
-          .env.example
-          .env.local
-          .eslintrc.json
-          README.md
-          .next/cache/
-          EOF
-
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
