@@ -2,7 +2,7 @@ name: Deploy Next.js App to Azure
 
 on:
   push:
-    branches: [" CobaAzureYer"]
+    branches: ["main"]
   workflow_dispatch:
 
 env:
