@@ -1,4 +1,17 @@
 # 1. Resource Group
+terraform {
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "~>3.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "demo-crud-rg"
   location = "East Asia"
