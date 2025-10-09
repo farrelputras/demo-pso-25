@@ -63,34 +63,54 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Make deploy folder if not exists
+            set -xe
+
+            echo "🚀 Starting deployment process on EC2..."
+
+            # Step 1: Ensure deploy directory exists
+            echo "📁 Ensuring deploy directory exists: ${{ env.DEPLOY_PATH }}"
             mkdir -p ${{ env.DEPLOY_PATH }}
 
-            # Clean previous build
+            # Step 2: Clean previous build
+            echo "🧹 Cleaning previous build files..."
             rm -rf ${{ env.DEPLOY_PATH }}/*
 
-            # Extract uploaded build
+            # Step 3: Extract new build
+            echo "📦 Extracting uploaded build archive..."
             tar -xzf /home/ubuntu/app.tar.gz -C ${{ env.DEPLOY_PATH }}
 
-            # Navigate to deploy directory
+            # Step 4: Move into deploy directory
+            echo "📂 Navigating to deploy directory..."
             cd ${{ env.DEPLOY_PATH }}
+            echo "✅ Current directory: $(pwd)"
 
-            # Install dependencies
+            # Step 5: Install dependencies
+            echo "📦 Installing npm dependencies (omit dev)..."
             npm install --omit=dev
 
-            # Use PM2 to manage process (install if not exists)
+            # Step 6: Ensure PM2 is installed
+            echo "🔧 Checking PM2 installation..."
             if ! command -v pm2 &> /dev/null
             then
+              echo "⚙️ PM2 not found — installing globally..."
               sudo npm install -g pm2
+            else
+              echo "✅ PM2 already installed."
             fi
 
-            # Restart or start the app
+            # Step 7: Restart or start the app
+            echo "🚀 Restarting or starting PM2 app: ${{ env.APP_NAME }}"
             if pm2 list | grep -q ${{ env.APP_NAME }}
             then
+              echo "♻️ Restarting existing app..."
               pm2 restart ${{ env.APP_NAME }}
             else
+              echo "✨ Starting new app process..."
               pm2 start npm --name "${{ env.APP_NAME }}" -- start
             fi
 
-            # Save PM2 config for restart on reboot
+            # Step 8: Save PM2 configuration
+            echo "💾 Saving PM2 process list for startup on reboot..."
             pm2 save
+
+            echo "✅ Deployment completed successfully!"
