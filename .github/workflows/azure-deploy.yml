@@ -36,11 +36,55 @@
           env:
             NODE_ENV: production
             MONGODB_URL: ${{ secrets.AZURE_COSMOS_MONGODB_URL }}
+
+        - name: Create deployment package
+          run: |
+            mkdir -p deployment-package
+            cp -r .next deployment-package/
+            cp -r public deployment-package/ 2>/dev/null || :
+            cp package*.json deployment-package/
+            cp next.config.js deployment-package/ 2>/dev/null || :
+            
+            echo '{
+              "name": "nextjs-crud",
+              "version": "0.1.0",
+              "private": true,
+              "scripts": {
+                "start": "next start -p $PORT"
+              },
+              "dependencies": {
+                "next": "13.4.10",
+                "react": "18.2.0",
+                "react-dom": "18.2.0",
+                "mongoose": "^7.4.0",
+                "bootstrap": "^5.3.0",
+                "react-hook-form": "^7.45.2",
+                "uuid": "^9.0.0"
+              }
+            }' > deployment-package/package.json
+
+        - name: Install production dependencies only
+          working-directory: deployment-package
+          run: npm ci --omit=dev
   
         - name: Deploy to Azure Web App
           uses: azure/webapps-deploy@v2
           with:
             app-name: ${{ env.WEBAPP_NAME }}
             publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-            package: .
+            package: deployment-package
+
+        - name: Configure Azure App Settings
+          uses: azure/CLI@v1
+          with:
+            azcliversion: latest
+            inlineScript: |
+              az webapp config appsettings set \
+                --name ${{ env.WEBAPP_NAME }} \
+                --resource-group demo-crud-rg \
+                --settings \
+                  WEBSITE_NODE_DEFAULT_VERSION="~20" \
+                  SCM_DO_BUILD_DURING_DEPLOYMENT="false" \
+                  MONGODB_URL="${{ secrets.AZURE_COSMOS_MONGODB_URL }}" \
+                  NODE_ENV="production"
   
