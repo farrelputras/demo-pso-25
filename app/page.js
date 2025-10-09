@@ -6,6 +6,7 @@ import AllProducts from "./components/all-products";
 const Home = () => {
   return (
     <div>
+      <div className="d-flex mb-2">TEST GITHUB ACTION</div>
       <div className="d-flex mb-2">
         <Link className="btn btn-primary" href="../add/">
           Add Product
