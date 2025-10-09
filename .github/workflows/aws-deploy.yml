@@ -1,0 +1,91 @@
+---
+name: Deploy Next.js App to AWS EC2
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "22"
+  APP_NAME: "demo-crud-app"
+  DEPLOY_PATH: "/var/www/demo-crud-app"
+
+jobs:
+  build-and-deploy:
+    name: "Build and Deploy to AWS EC2"
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: ./package-lock.json
+
+      # Step 3: Install dependencies and build Next.js
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          # Replace this with your actual environment variables
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # Step 4: Compress build files for transfer
+      - name: Archive production build
+        run: |
+          tar -czf app.tar.gz .next package.json package-lock.json public
+
+      # Step 5: Deploy to AWS EC2 using SSH
+      - name: Deploy to AWS EC2
+        uses: appleboy/scp-action@v0.1.5
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "app.tar.gz"
+          target: "/home/ubuntu/"
+
+      # Step 6: SSH into EC2 and restart app
+      - name: Restart App on EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Make deploy folder if not exists
+            sudo mkdir -p ${{ env.DEPLOY_PATH }}
+            cd ${{ env.DEPLOY_PATH }}
+
+            # Extract uploaded build
+            sudo tar -xzf /home/ubuntu/app.tar.gz -C ${{ env.DEPLOY_PATH }}
+
+            # Install dependencies
+            sudo npm install --omit=dev
+
+            # Use PM2 to manage process (install if not exists)
+            if ! command -v pm2 &> /dev/null
+            then
+              sudo npm install -g pm2
+            fi
+
+            # Restart or start the app
+            if pm2 list | grep -q ${{ env.APP_NAME }}
+            then
+              pm2 restart ${{ env.APP_NAME }}
+            else
+              pm2 start npm --name "${{ env.APP_NAME }}" -- start
+            fi
+
+            # Save PM2 config for restart on reboot
+            pm2 save
