@@ -38,7 +38,7 @@ jobs:
         env:
           NODE_ENV: production
           # Replace this with your actual environment variables
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MONGODB_URL: ${{ secrets.DATABASE_URL }}
 
       # Step 4: Compress build files for transfer
       - name: Archive production build
