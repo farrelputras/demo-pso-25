@@ -144,14 +144,18 @@ resource "aws_instance" "server" {
               apt-get update && apt-get upgrade -y
 
               # Install basic packages
-              apt install -y curl
+              apt-get install -y curl
 
               # Install Node.js 22.x (required for Next.js)
               curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-              sudo apt install -y nodejs
+              apt-get install -y nodejs
 
               # Install Docker
               apt-get install -y docker.io
+              systemctl enable --now docker
+
+              # Allow 'ubuntu' user to run Docker without sudo
+              usermod -aG docker ubuntu
 
               # Install PM2 globally for Next.js process management
               npm install -g pm2
@@ -165,7 +169,7 @@ resource "aws_instance" "server" {
               chmod 755 /var/log/pm2
 
               # Configure PM2 to auto-start on system boot
-              sudo -u ubuntu pm2 startup || true
+              su - ubuntu -c "pm2 startup systemd -u ubuntu --hp /home/ubuntu"
               
               echo "✅ EC2 instance ready for Next.js deployment"
               EOF

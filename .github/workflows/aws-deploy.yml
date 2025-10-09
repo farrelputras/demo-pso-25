@@ -9,7 +9,7 @@ on:
 env:
   NODE_VERSION: "22"
   APP_NAME: "demo-crud-app"
-  DEPLOY_PATH: "/var/www/demo-crud-app"
+  DEPLOY_PATH: "/home/ubuntu/deploy"
 
 jobs:
   build-and-deploy:
@@ -64,14 +64,19 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # Make deploy folder if not exists
-            sudo mkdir -p ${{ env.DEPLOY_PATH }}
-            cd ${{ env.DEPLOY_PATH }}
+            mkdir -p ${{ env.DEPLOY_PATH }}
+
+            # Clean previous build
+            rm -rf ${{ env.DEPLOY_PATH }}/*
 
             # Extract uploaded build
-            sudo tar -xzf /home/ubuntu/app.tar.gz -C ${{ env.DEPLOY_PATH }}
+            tar -xzf /home/ubuntu/app.tar.gz -C ${{ env.DEPLOY_PATH }}
+
+            # Navigate to deploy directory
+            cd ${{ env.DEPLOY_PATH }}
 
             # Install dependencies
-            sudo npm install --omit=dev
+            npm install --omit=dev
 
             # Use PM2 to manage process (install if not exists)
             if ! command -v pm2 &> /dev/null
