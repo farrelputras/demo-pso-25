@@ -1,45 +1,46 @@
 ---
-name: Deploy Next.js App to Azure
-
-on:
-  push:
-    branches: ["main"]
-  workflow_dispatch:
-
-env:
-  NODE_VERSION: "20"
-  WEBAPP_NAME: "demo-crud-app"
-
-jobs:
-  build-and-deploy:
-    name: "Build and Deploy Application"
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: ./package-lock.json
-
-      - name: Install dependencies
-        working-directory: .
-        run: npm ci
-
-      - name: Build Next.js application
-        working-directory: .
-        run: npm run build
-        env:
-          NODE_ENV: production
-          MONGODB_URL: mongodb+srv://farrelputras:<password>@cosmosdb-manual.global.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000
-
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: .
+  name: Deploy Next.js App to Azure
+  
+  on:
+    push:
+      branches: ["main"]
+    workflow_dispatch:
+  
+  env:
+    NODE_VERSION: "20"
+    WEBAPP_NAME: "demo-crud-app"
+  
+  jobs:
+    build-and-deploy:
+      name: "Build and Deploy Application"
+      runs-on: ubuntu-latest
+  
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+  
+        - name: Setup Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: ${{ env.NODE_VERSION }}
+            cache: "npm"
+            cache-dependency-path: ./package-lock.json
+  
+        - name: Install dependencies
+          working-directory: .
+          run: npm ci
+  
+        - name: Build Next.js application
+          working-directory: .
+          run: npm run build
+          env:
+            NODE_ENV: production
+            MONGODB_URL: ${{ secrets.AZURE_COSMOS_MONGODB_URL }}
+  
+        - name: Deploy to Azure Web App
+          uses: azure/webapps-deploy@v2
+          with:
+            app-name: ${{ env.WEBAPP_NAME }}
+            publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+            package: .
+  
